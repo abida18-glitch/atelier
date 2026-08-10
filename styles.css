@@ -1,4 +1,4 @@
-/* Typography Setup */
+/* ==================== TYPOGRAPHY SETUP ==================== */
 .font-script {
   font-family: 'Great Vibes', cursive, 'Playfair Display', serif;
 }
@@ -7,54 +7,132 @@
   font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
 }
 
-/* Custom Deep Dark Moody-to-Nude Ombre Palette */
+/* ==================== LIGHT & ELEGANT PALETTE ==================== */
+/* Soft cream/ivory to warm nude gradient background */
 .bg-dark-ombre {
   background: linear-gradient(
     135deg,
-    #020406 0%,
-    #06120e 25%,
-    #130f0c 50%,
-    #241f1c 75%,
-    #3b332e 100%
+    #fdfbf7 0%,
+    #f7f3ec 35%,
+    #f0e8dd 70%,
+    #e8dccf 100%
   );
   background-attachment: fixed;
+  color: #2b2623;
 }
 
-/* Interactive Navigation Button Custom Styling */
+/* Base Body Text Adjustments for Light Theme */
+body {
+  color: #2d2724;
+}
+
+/* Side Navigation Bar Light Theme Styling */
+aside {
+  background-color: rgba(253, 251, 247, 0.95) !important;
+  border-right-color: rgba(200, 180, 160, 0.4) !important;
+  color: #2b2623;
+}
+
+aside h1 {
+  color: #3d2f26 !important;
+}
+
+/* Navigation Buttons */
 .nav-btn {
-  background-color: rgba(15, 23, 42, 0.4);
-  border: 1px solid rgba(120, 80, 50, 0.2);
-  color: #cbd5e1;
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(210, 195, 180, 0.5);
+  color: #52463e;
 }
 
 .nav-btn:hover {
-  background-color: rgba(6, 78, 59, 0.3);
-  border-color: rgba(16, 185, 129, 0.4);
-  color: #fef3c7;
+  background-color: rgba(240, 230, 220, 0.8);
+  border-color: #a38871;
+  color: #1a1512;
 }
 
 .active-tab {
-  background: linear-gradient(90deg, rgba(6, 78, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
-  border-color: #10b981 !important;
+  background: linear-gradient(90deg, #3d5a45 0%, #2c4434 100%) !important;
+  border-color: #2c4434 !important;
   color: #ffffff !important;
-  box-shadow: 0 4px 20px -2px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 15px -2px rgba(44, 68, 52, 0.25);
 }
 
-/* Custom Sleek Scrollbar Controls */
+.active-tab span {
+  color: #e6d7c3 !important;
+}
+
+/* Card Containers & Panels */
+.bg-slate-950,
+.bg-slate-950\/80,
+.bg-slate-950\/90,
+.bg-slate-900 {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+  border-color: rgba(210, 195, 180, 0.6) !important;
+  color: #2b2623 !important;
+}
+
+/* Inputs, Selects & Textareas */
+input,
+select,
+textarea {
+  background-color: #faf8f5 !important;
+  border-color: #d1c4b6 !important;
+  color: #2b2623 !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #3d5a45 !important;
+  background-color: #ffffff !important;
+}
+
+/* Typography Color Overrides for Light Theme */
+.text-amber-100,
+.text-amber-200,
+.text-amber-300 {
+  color: #4a3b32 !important;
+}
+
+.text-stone-100,
+.text-stone-200,
+.text-stone-300 {
+  color: #2b2623 !important;
+}
+
+.text-stone-400,
+.text-stone-500 {
+  color: #6e6259 !important;
+}
+
+.text-emerald-300,
+.text-emerald-400 {
+  color: #2c4434 !important;
+}
+
+/* Border Overrides */
+.border-stone-800,
+.border-stone-700,
+.border-amber-900\/30,
+.border-amber-900\/40 {
+  border-color: rgba(210, 195, 180, 0.5) !important;
+}
+
+/* ==================== SLEEK SCROLLBAR ==================== */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #020617;
+  background: #f0e8dd;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
+  background: #c5b5a5;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #059669;
+  background: #3d5a45;
 }
