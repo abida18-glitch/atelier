@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ATELIER HAUTE — 3D Fashion Design & E-Commerce Platform</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="bg-dark-ombre text-slate-100 font-serif min-h-screen flex flex-col md:flex-row antialiased overflow-x-hidden">
+
+  <aside class="w-full md:w-80 bg-slate-950/90 border-r border-slate-800/80 md:h-screen md:sticky top-0 z-50 flex flex-col justify-between p-6 backdrop-blur-md">
+    <div>
+      <div class="mb-8">
+        <h1 class="font-script text-4xl text-emerald-200">Atelier Haute</h1>
+        <p class="font-roman text-[10px] tracking-widest text-emerald-400/80 uppercase mt-1">I. Studio & E-Commerce Platform</p>
+      </div>
+
+      <nav class="space-y-2">
+        <button onclick="switchTab('dresses')" id="tab-dresses" class="nav-btn active-tab w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all">
+          <span class="font-roman text-sm font-bold text-emerald-300">I.</span>
+          <span class="font-script text-2xl">Dresses Catalog</span>
+        </button>
+
+        <button onclick="switchTab('custom')" id="tab-custom" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all">
+          <span class="font-roman text-sm font-bold text-emerald-300">II.</span>
+          <span class="font-script text-2xl">Create Your Dress</span>
+        </button>
+
+        <button onclick="switchTab('camera')" id="tab-camera" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all">
+          <span class="font-roman text-sm font-bold text-emerald-300">III.</span>
+          <span class="font-script text-2xl">AI Camera Studio</span>
+        </button>
+
+        <button onclick="switchTab('tracker')" id="tab-tracker" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all">
+          <span class="font-roman text-sm font-bold text-emerald-300">IV.</span>
+          <span class="font-script text-2xl">Package Tracker</span>
+        </button>
+
+        <button onclick="switchTab('designers')" id="tab-designers" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all">
+          <span class="font-roman text-sm font-bold text-emerald-300">V.</span>
+          <span class="font-script text-2xl">Designers Portfolio</span>
+        </button>
+
+        <button onclick="switchTab('communication')" id="tab-communication" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all">
+          <span class="font-roman text-sm font-bold text-emerald-300">VI.</span>
+          <span class="font-script text-2xl">Atelier Direct Chat</span>
+        </button>
+
+        <button onclick="switchTab('checkout')" id="tab-checkout" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all">
+          <span class="font-roman text-sm font-bold text-emerald-300">VII.</span>
+          <span class="font-script text-2xl">Boutique Checkout</span>
+        </button>
+
+        <button onclick="switchTab('reviews')" id="tab-reviews" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all">
+          <span class="font-roman text-sm font-bold text-emerald-300">VIII.</span>
+          <span class="font-script text-2xl">Designer Reviews</span>
+        </button>
+      </nav>
+    </div>
+
+    <div class="mt-8 pt-4 border-t border-slate-800/80 font-roman text-[10px] text-stone-400">
+      <p>STATUS: <span class="text-emerald-400">SUPABASE ACTIVE</span></p>
+      <p class="mt-1 text-stone-500">MMXXVI © Atelier Haute Couture</p>
+    </div>
+  </aside>
+
+  <main class="flex-1 p-4 md:p-10 max-w-7xl mx-auto w-full space-y-6">
+
+    <div id="notification-bar" class="hidden p-4 rounded-xl border text-xs font-roman transition-all duration-300"></div>
+
+    <section id="section-dresses" class="tab-content block space-y-6">
+      <header class="border-b border-slate-800/80 pb-4 flex flex-col md:flex-row justify-between md:items-end gap-4">
+        <div>
+          <h2 class="font-script text-5xl text-emerald-200">Couture Dress Catalog</h2>
+          <p class="font-roman text-xs tracking-wider text-stone-400 mt-1">I. SELECT FROM OUR COMPREHENSIVE DATASET OF 100 REAL-WORLD DESIGNS</p>
+        </div>
+        <div class="font-roman text-xs bg-slate-900/80 px-4 py-2 rounded-lg border border-slate-800">
+          DATASET: <span id="fabric-count" class="text-emerald-400 font-bold">100</span> ITEMS
+        </div>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-roman text-xs">
+        <div>
+          <label class="block text-stone-300 mb-1">I. SEARCH TEXTILES & DRESSES</label>
+          <input type="text" id="catalog-search" oninput="filterCatalog()" placeholder="Search Satin, Silk, Lace, Velvet, Denim..." class="w-full bg-slate-900/80 border border-slate-700/60 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 text-stone-200" />
+        </div>
+        <div>
+          <label class="block text-stone-300 mb-1">II. FILTER FABRIC VARIETY</label>
+          <select id="catalog-filter" onchange="filterCatalog()" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 text-stone-200">
+            <option value="ALL">ALL FABRICS (100 SELECTIONS)</option>
+            <option value="Satin">SATIN</option>
+            <option value="Silk">SILK</option>
+            <option value="Lace">LACE</option>
+            <option value="Velvet">VELVET</option>
+            <option value="Denim">DENIM</option>
+            <option value="Corduroy">CORDUROY</option>
+            <option value="Chiffon">CHIFFON</option>
+            <option value="Brocade">BROCADE</option>
+            <option value="Organza">ORGANZA</option>
+            <option value="Tulle">TULLE</option>
+            <option value="Linen">LINEN</option>
+            <option value="Tweed">TWEED</option>
+            <option value="Leather">LEATHER</option>
+            <option value="Technical Synthetic">SYNTHETIC KNITS</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="fabric-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 pt-2">
+        </div>
+    </section>
+
+    <section id="section-custom" class="tab-content hidden space-y-6 font-roman text-xs">
+      <header class="border-b border-slate-800/80 pb-4">
+        <h2 class="font-script text-5xl text-emerald-200">Custom Dress Studio</h2>
+        <p class="font-roman text-xs tracking-wider text-stone-400 mt-1">II. CONFIGURE FABRICS (1000+), EMBELLISHMENTS (10,000+) & DELIVERY DATES</p>
+      </header>
+
+      <form id="custom-dress-form" onsubmit="handleCustomDressSubmit(event)" class="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl space-y-6">
+        <div class="space-y-2">
+          <label class="block text-emerald-300 font-bold uppercase tracking-wider">I. REQUIRED FABRIC SELECTION (1,000+ FABRICS AVAILABLE)</label>
+          <select id="custom-fabric-select" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-stone-200 focus:outline-none focus:border-emerald-500">
+            <option value="">-- SELECT REQUIRED FABRIC (1000+ DATABASE) --</option>
+            </select>
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-emerald-300 font-bold uppercase tracking-wider">II. SPARKLES & SEQUINS ACCENTS (OPTIONAL 10,000+ SELECTIONS)</label>
+          <select id="custom-sparkle-select" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-stone-200 focus:outline-none focus:border-emerald-500">
+            <option value="None">None (Standard Matte Finish)</option>
+            </select>
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-emerald-300 font-bold uppercase tracking-wider">III. REQUIRED TARGET DELIVERY DATE</label>
+          <input type="date" id="custom-delivery-date" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-stone-200 focus:outline-none focus:border-emerald-500" />
+        </div>
+
+        <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-600 font-bold py-4 rounded-xl uppercase tracking-widest text-stone-100 transition-all shadow-lg">
+          Save Custom Design Spec
+        </button>
+      </form>
+    </section>
+
+    <section id="section-camera" class="tab-content hidden space-y-6 font-roman text-xs">
+      <header class="border-b border-slate-800/80 pb-4">
+        <h2 class="font-script text-5xl text-emerald-200">AI Camera Studio</h2>
+        <p class="font-roman text-xs tracking-wider text-stone-400 mt-1">III. AUTOMATED BODY SIZE DETECTION, SNAPSHOTS, & LOOK GENERATION</p>
+      </header>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[420px] relative shadow-inner">
+          <div id="camera-viewport" class="relative w-full h-96 rounded-xl overflow-hidden flex items-center justify-center bg-slate-900">
+            <video id="webcam-video" autoplay class="w-full h-full object-cover hidden"></video>
+            <img id="viewport-image" src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=800&q=80" alt="Camera Viewport" class="h-full object-contain transition-all duration-700 transform" />
+            <div id="camera-overlay-tag" class="absolute top-4 left-4 font-roman text-xs bg-slate-950/80 border border-emerald-500/40 text-emerald-300 px-3 py-1 rounded-full backdrop-blur-md">
+              MODE: PREVIEW DISPLAY
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full mt-4">
+            <button onclick="enableLiveCamera()" class="py-2.5 px-3 bg-slate-900 border border-slate-700 hover:border-emerald-500 rounded-lg transition-all text-center">
+              I. LIVE CAMERA
+            </button>
+            <button onclick="takeSnapshot()" class="py-2.5 px-3 bg-slate-900 border border-slate-700 hover:border-emerald-500 rounded-lg transition-all text-center">
+              II. SNAPSHOT LOOK
+            </button>
+            <button onclick="generateAIImage()" class="py-2.5 px-3 bg-slate-900 border border-slate-700 hover:border-emerald-500 rounded-lg transition-all text-center">
+              III. GENERATE AI DRESS
+            </button>
+            <button onclick="processBodySizeDetection()" class="py-2.5 px-3 bg-emerald-900 border border-emerald-600 text-emerald-200 hover:bg-emerald-800 rounded-lg transition-all text-center">
+              IV. DETECT BODY SIZE
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <div id="size-detection-card" class="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl space-y-3">
+            <h3 class="font-script text-3xl text-emerald-300">AI Fit Assistant</h3>
+            <p class="text-stone-400">AUTOMATED CAMERA SIZING RESULT:</p>
+            <div id="size-result" class="p-3 bg-slate-950 border border-slate-800 rounded-lg text-emerald-400 font-bold text-center">
+              READY FOR CAMERA SCAN
+            </div>
+            <button onclick="toggleMeasurementModal(true)" class="w-full bg-slate-800 hover:bg-slate-700 text-stone-200 py-2.5 rounded-xl border border-slate-700 transition-all">
+              Watch Body Measurement Guide
+            </button>
+          </div>
+
+          <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl space-y-3">
+            <h4 class="text-stone-300 uppercase">CAPTURED SNAPSHOT GALLERY</h4>
+            <div id="snapshot-gallery" class="grid grid-cols-3 gap-2 min-h-[80px] border border-dashed border-slate-800 rounded-lg p-2 text-center text-stone-500 flex items-center justify-center">
+              No snapshots captured.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="section-tracker" class="tab-content hidden space-y-6 font-roman text-xs">
+      <header class="border-b border-slate-800/80 pb-4">
+        <h2 class="font-script text-5xl text-emerald-200">Live Package Tracker</h2>
+        <p class="font-roman text-xs tracking-wider text-stone-400 mt-1">IV. REAL-TIME ROUTE MAP STATUS & MILESTONE TIMELINE</p>
+      </header>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 bg-slate-950 border border-slate-800 rounded-2xl p-2 h-[420px] shadow-xl overflow-hidden">
+          <div id="map" class="w-full h-full rounded-xl"></div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl space-y-6">
+          <h3 class="font-script text-3xl text-emerald-300">Shipping Timeline</h3>
+          <div class="space-y-6 border-l-2 border-slate-800 pl-4">
+            <div class="relative">
+              <span class="absolute -left-[23px] top-0 w-3 h-3 bg-emerald-500 rounded-full"></span>
+              <p class="font-bold text-emerald-400">STAGE I. FACTORY ASSEMBLY</p>
+              <p class="text-stone-400">Atelier Haute Atelier — Inspection Passed</p>
+            </div>
+            <div class="relative">
+              <span class="absolute -left-[23px] top-0 w-3 h-3 bg-emerald-500 rounded-full"></span>
+              <p class="font-bold text-emerald-400">STAGE II. CUSTOMS CLEARANCE</p>
+              <p class="text-stone-400">International Logistics Port Cleared</p>
+            </div>
+            <div class="relative">
+              <span class="absolute -left-[23px] top-0 w-3 h-3 bg-amber-400 rounded-full animate-ping"></span>
+              <p class="font-bold text-amber-300">STAGE III. REAL-TIME TRANSIT</p>
+              <p class="text-stone-400">Regional Courier Dispatch Active</p>
+            </div>
+            <div class="relative opacity-50">
+              <span class="absolute -left-[23px] top-0 w-3 h-3 bg-slate-700 rounded-full"></span>
+              <p class="font-bold text-stone-400">STAGE IV. FINAL DELIVERY</p>
+              <p class="text-stone-500">Scheduled Arrival: Estimated Today</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="section-designers" class="tab-content hidden space-y-6 font-roman text-xs">
+      <header class="border-b border-slate-800/80 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+        <div>
+          <h2 class="font-script text-5xl text-emerald-200">Designer Portfolio</h2>
+          <p class="font-roman text-xs tracking-wider text-stone-400 mt-1">V. CUSTOM PROFILES, CATEGORIES, & LIVE STREAMING</p>
+        </div>
+        <button onclick="triggerLiveStream()" class="bg-rose-900/80 hover:bg-rose-800 text-rose-200 px-4 py-2 rounded-xl border border-rose-700 flex items-center gap-2 transition-all">
+          <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+          GO LIVE STREAM
+        </button>
+      </header>
+
+      <div id="designer-profile-card" class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 relative overflow-hidden space-y-4">
+        <div id="profile-bg" class="h-32 rounded-xl bg-gradient-to-r from-emerald-950 via-slate-900 to-amber-950 border border-slate-800 flex items-end p-4 justify-between">
+          <label class="bg-slate-950/80 border border-slate-700 px-3 py-1 rounded-lg cursor-pointer hover:border-emerald-500">
+            Upload Background
+            <input type="file" accept="image/*" class="hidden" onchange="handleBgUpload(event)" />
+          </label>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center gap-4 -mt-10 px-4">
+          <div class="relative w-24 h-24 rounded-full border-2 border-emerald-500 overflow-hidden bg-slate-950 flex items-center justify-center">
+            <img id="profile-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" class="w-full h-full object-cover" />
+            <label class="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 flex items-center justify-center cursor-pointer text-[10px] text-stone-200">
+              Add Photo
+              <input type="file" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)" />
+            </label>
+          </div>
+          <div>
+            <h3 id="designer-name" class="font-script text-3xl text-emerald-300">Atelier House Designer</h3>
+            <p class="text-stone-400">Senior Couture Pattern Maker & 3D Designer</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-4">
+          <div class="flex border-b border-slate-800 space-x-4">
+            <button onclick="switchCategory('posts')" id="cat-posts" class="pb-2 border-b-2 border-emerald-500 text-emerald-300">1) POSTS</button>
+            <button onclick="switchCategory('reels')" id="cat-reels" class="pb-2 text-stone-400 hover:text-stone-200">2) REELS</button>
+            <button onclick="switchCategory('tagged')" id="cat-tagged" class="pb-2 text-stone-400 hover:text-stone-200">3) TAGGED PHOTOS</button>
+          </div>
+
+          <div id="portfolio-content-grid" class="grid grid-cols-3 gap-3 min-h-[200px]">
+            </div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl space-y-4">
+          <h4 class="text-emerald-300 uppercase tracking-wider">PREVIOUS CLIENT EXPERIENCES</h4>
+          <div class="space-y-3">
+            <div class="p-3 bg-slate-950 border border-slate-800 rounded-lg">
+              <p class="text-amber-400">★★★★★</p>
+              <p class="text-stone-300 italic">"The custom dress fitted perfectly during the live fitting stream."</p>
+              <span class="text-[10px] text-stone-500 block mt-1">— Princess Sophie</span>
+            </div>
+            <div class="p-3 bg-slate-950 border border-slate-800 rounded-lg">
+              <p class="text-amber-400">★★★★★</p>
+              <p class="text-stone-300 italic">"3D garment pattern was adjusted in real-time."</p>
+              <span class="text-[10px] text-stone-500 block mt-1">— Baroness Clara</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="section-communication" class="tab-content hidden space-y-6 font-roman text-xs">
+      <header class="border-b border-slate-800/80 pb-4">
+        <h2 class="font-script text-5xl text-emerald-200">Atelier Direct Chat</h2>
+        <p class="font-roman text-xs tracking-wider text-stone-400 mt-1">VI. FACETIME, MESSAGING, FILE ATTACHMENTS & ORDER UPDATES</p>
+      </header>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 bg-slate-900/80 border border-slate-800 rounded-2xl p-6 flex flex-col h-[500px]">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-4 mb-4">
+            <div class="flex items-center space-x-3">
+              <div class="w-3 h-3 bg-emerald-500 rounded-full"></div>
+              <span class="font-bold text-stone-200">Manufacturer / Designer Direct</span>
+            </div>
+            <div class="flex space-x-2">
+              <button onclick="triggerCall('FaceTime')" class="bg-emerald-900/80 hover:bg-emerald-800 text-emerald-200 px-3 py-1.5 rounded-lg border border-emerald-700">
+                FaceTime
+              </button>
+              <button onclick="triggerCall('Voice')" class="bg-slate-800 hover:bg-slate-700 text-stone-200 px-3 py-1.5 rounded-lg border border-slate-700">
+                Phone Call
+              </button>
+            </div>
+          </div>
+
+          <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 pr-2 mb-4">
+            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 max-w-md">
+              <p class="text-stone-300">Welcome to Atelier Direct. Send image files, request order status, or initiate FaceTime calls here.</p>
+              <span class="text-[10px] text-stone-500 block mt-1">11:00 AM</span>
+            </div>
+          </div>
+
+          <form onsubmit="handleSendMessage(event)" class="flex gap-2 pt-2 border-t border-slate-800">
+            <label class="bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-2 rounded-lg cursor-pointer flex items-center text-stone-300">
+              Files
+              <input type="file" id="chat-file-input" class="hidden" onchange="handleFileUpload(event)" />
+            </label>
+            <input type="text" id="chat-input" placeholder="Type message or order inquiry..." class="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-stone-200 focus:outline-none focus:border-emerald-500" />
+            <button type="submit" class="bg-emerald-700 hover:bg-emerald-600 text-stone-100 px-5 py-2 rounded-lg font-bold">
+              Send
+            </button>
+          </form>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl space-y-4">
+          <h3 class="text-emerald-300 uppercase tracking-widest">ORDER SPECIFICATIONS</h3>
+          <div class="p-3 bg-slate-950 rounded-lg border border-slate-800 space-y-2">
+            <p><strong class="text-stone-300">Order ID:</strong> #ATH-2026-99</p>
+            <p><strong class="text-stone-300">Status:</strong> Tailoring Active</p>
+            <p><strong class="text-stone-300">Target Delivery:</strong> Dec 12, 2026</p>
+          </div>
+          <button onclick="requestOrderUpdate()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-stone-200 py-2.5 rounded-xl uppercase tracking-wider">
+            Request Rapid Order Update
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="section-checkout" class="tab-content hidden space-y-6 font-roman text-xs">
+      <header class="border-b border-slate-800/80 pb-4">
+        <h2 class="font-script text-5xl text-emerald-200">Boutique Checkout</h2>
+        <p class="font-roman text-xs tracking-wider text-stone-400 mt-1">VII. ACCOUNTS, CONTACT INFORMATION & FLEXIBLE PAYMENT OPTIONS</p>
+      </header>
+
+      <form id="checkout-form" onsubmit="handleCheckoutSubmit(event)" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-6">
+          <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl space-y-3">
+            <h3 class="text-emerald-300 uppercase tracking-widest">I. ACCOUNT OPTION</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <button type="button" onclick="setAuthMethod('google')" class="auth-btn py-3 border border-slate-700 rounded-xl hover:border-emerald-500">Google</button>
+              <button type="button" onclick="setAuthMethod('email')" class="auth-btn py-3 border border-slate-700 rounded-xl hover:border-emerald-500">Email</button>
+              <button type="button" onclick="setAuthMethod('phone')" class="auth-btn py-3 border border-slate-700 rounded-xl hover:border-emerald-500">Number</button>
+              <button type="button" onclick="setAuthMethod('guest')" class="auth-btn active-auth py-3 border border-emerald-500 bg-emerald-950/80 rounded-xl">Guest Checkout</button>
+            </div>
+          </div>
+
+          <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl space-y-4">
+            <h3 class="text-emerald-300 uppercase tracking-widest">II. CONTACT INFORMATION</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-stone-400 mb-1">FIRST NAME *</label>
+                <input type="text" id="cust-firstname" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-stone-200 focus:outline-none focus:border-emerald-500" />
+              </div>
+              <div>
+                <label class="block text-stone-400 mb-1">LAST NAME *</label>
+                <input type="text" id="cust-lastname" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-stone-200 focus:outline-none focus:border-emerald-500" />
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block text-stone-400 mb-1">EMAIL OR PHONE NUMBER *</label>
+                <input type="text" id="cust-contact" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-stone-200 focus:outline-none focus:border-emerald-500" />
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl space-y-3">
+            <h3 class="text-emerald-300 uppercase tracking-widest">III. PAYMENT METHODS</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <label class="border border-slate-800 p-3 rounded-xl flex items-center space-x-2 cursor-pointer bg-slate-950">
+                <input type="radio" name="payment" value="credit" checked class="accent-emerald-500" />
+                <span>Credit Card</span>
+              </label>
+              <label class="border border-slate-800 p-3 rounded-xl flex items-center space-x-2 cursor-pointer bg-slate-950">
+                <input type="radio" name="payment" value="debit" class="accent-emerald-500" />
+                <span>Debit Card</span>
+              </label>
+              <label class="border border-slate-800 p-3 rounded-xl flex items-center space-x-2 cursor-pointer bg-slate-950">
+                <input type="radio" name="payment" value="cashapp" class="accent-emerald-500" />
+                <span>Cash App</span>
+              </label>
+              <label class="border border-slate-800 p-3 rounded-xl flex items-center space-x-2 cursor-pointer bg-slate-950">
+                <input type="radio" name="payment" value="venmo" class="accent-emerald-500" />
+                <span>Venmo</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl space-y-6 h-fit">
+          <h3 class="font-script text-3xl text-emerald-300">Order Summary</h3>
+          <div class="space-y-2 border-b border-slate-800 pb-4">
+            <div class="flex justify-between">
+              <span>Custom Silk Evening Dress</span>
+              <span>$2,400.00</span>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-stone-400">IV. COUPON DISCOUNT CODE</label>
+            <div class="flex gap-2">
+              <input type="text" id="coupon-code" placeholder="ATELIER2026" class="flex-1 bg-slate-950 border border-slate-800 rounded-lg p-2 text-stone-200 uppercase focus:outline-none focus:border-emerald-500" />
+              <button type="button" onclick="applyCoupon()" class="bg-slate-800 hover:bg-slate-700 text-stone-200 px-4 py-2 rounded-lg transition-all">Apply</button>
+            </div>
+            <p id="coupon-status" class="text-[10px] text-stone-400 mt-1"></p>
+          </div>
+
+          <div class="space-y-2 border-t border-slate-800 pt-4 text-sm">
+            <div class="flex justify-between text-stone-400">
+              <span>Subtotal</span>
+              <span>$2,400.00</span>
+            </div>
+            <div class="flex justify-between text-stone-400">
+              <span>Discount</span>
+              <span id="discount-val" class="text-emerald-400">-$0.00</span>
+            </div>
+            <div class="flex justify-between font-bold text-base text-stone-100 border-t border-slate-800 pt-2">
+              <span>Total</span>
+              <span id="total-val" class="text-emerald-300">$2,400.00</span>
+            </div>
+          </div>
+
+          <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-600 font-bold py-4 rounded-xl uppercase tracking-widest transition-all text-stone-100">
+            Proceed to Checkout
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section id="section-reviews" class="tab-content hidden space-y-6 font-roman text-xs">
+      <header class="border-b border-slate-800/80 pb-4">
+        <h2 class="font-script text-5xl text-emerald-200">Designer Reviews</h2>
+        <p class="font-roman text-xs tracking-wider text-stone-400 mt-1">VIII. CLICKABLE STAR TALLY & DASHBOARD FEEDBACK FORM</p>
+      </header>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl space-y-4">
+          <h3 class="font-script text-3xl text-emerald-300">Submit Review</h3>
+
+          <form id="review-form" onsubmit="handleReviewSubmit(event)" class="space-y-4">
+            <div>
+              <label class="block text-stone-400 mb-1">I. CLIENT NAME *</label>
+              <input type="text" id="review-author" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-stone-200 focus:outline-none focus:border-emerald-500" placeholder="e.g. Lady Vivienne" />
+            </div>
+
+            <div>
+              <label class="block text-stone-400 mb-1">II. STAR RATING *</label>
+              <div id="star-rating" class="flex space-x-2 text-2xl text-stone-600 cursor-pointer">
+                <span onclick="setRating(1)" class="star hover:text-amber-400">★</span>
+                <span onclick="setRating(2)" class="star hover:text-amber-400">★</span>
+                <span onclick="setRating(3)" class="star hover:text-amber-400">★</span>
+                <span onclick="setRating(4)" class="star hover:text-amber-400">★</span>
+                <span onclick="setRating(5)" class="star hover:text-amber-400">★</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-stone-400 mb-1">III. CLIENT CRITIQUE & FEEDBACK *</label>
+              <textarea id="review-text" required rows="4" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-stone-200 focus:outline-none focus:border-emerald-500" placeholder="Type your experience here..."></textarea>
+            </div>
+
+            <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-600 py-3 rounded-xl font-bold uppercase tracking-wider text-stone-100 transition-all">
+              Submit Review
+            </button>
+          </form>
+        </div>
+
+        <div class="lg:col-span-2 space-y-4">
+          <h3 class="text-stone-300 uppercase tracking-widest">IV. LIVE DASHBOARD FEEDBACK</h3>
+          <div id="reviews-feed" class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+            </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="modal-measurement" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-lg w-full space-y-4 font-roman text-xs">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="font-script text-3xl text-emerald-300">Body Measurement Guide</h3>
+        <button onclick="toggleMeasurementModal(false)" class="text-stone-400 hover:text-stone-100 text-lg">✕</button>
+      </div>
+      <div class="aspect-video bg-slate-950 rounded-lg flex items-center justify-center border border-slate-800 text-stone-500">
+        [ Video Tutorial: Measuring Body Dimensions ]
+      </div>
+      <div class="space-y-2 text-stone-300">
+        <p><strong class="text-emerald-400">I. BUST:</strong> Wrap tape under arms around fullest chest point.</p>
+        <p><strong class="text-emerald-400">II. WAIST:</strong> Wrap tape around narrowest waist point.</p>
+        <p><strong class="text-emerald-400">III. HIPS:</strong> Wrap tape around fullest hip point.</p>
+      </div>
+      <button onclick="toggleMeasurementModal(false)" class="w-full bg-slate-800 hover:bg-slate-700 py-3 rounded-xl text-stone-200 uppercase tracking-wider">Close Tutorial</button>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
