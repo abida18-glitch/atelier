@@ -1,4 +1,4 @@
-/* Custom Fonts */
+/* Typography Setup */
 .font-script {
   font-family: 'Great Vibes', cursive;
 }
@@ -7,7 +7,7 @@
   font-family: 'Cinzel', Georgia, serif;
 }
 
-/* Dark Gradient Ombre Color Theme (Black, Dark Green, Nude, Charcoal) */
+/* Deep Dark Gradient Palette (Black, Dark Green, Nude, Charcoal) */
 .bg-dark-ombre {
   background: linear-gradient(
     135deg,
@@ -19,7 +19,7 @@
   background-attachment: fixed;
 }
 
-/* Sidebar Navigation Button Styles */
+/* Sticky Navigation Button Styling */
 .nav-btn {
   background-color: rgba(15, 23, 42, 0.4);
   border: 1px solid rgba(51, 65, 85, 0.3);
@@ -38,7 +38,7 @@
   color: #ffffff !important;
 }
 
-/* Scrollbar Customization */
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
