@@ -1,0 +1,91 @@
+/* --- CUSTOM THEME EXTENSIONS & PALETTE COLORS --- */
+:root {
+  --color-obsidian: #090A0F;
+  --color-midnight: #11141E;
+  --color-nude-pink: #E8C5C8;
+  --color-nude-beige: #F5EBE6;
+  --color-emerald-deep: #0A2F1D;
+}
+
+/* Custom Tailwind Helper Classes */
+.bg-obsidian {
+  background-color: var(--color-obsidian);
+}
+
+.bg-midnight {
+  background-color: var(--color-midnight);
+}
+
+.text-nude-pink {
+  color: var(--color-nude-pink);
+}
+
+.text-nude-beige {
+  color: var(--color-nude-beige);
+}
+
+/* --- TYPOGRAPHY STYLING --- */
+.font-script {
+  font-family: 'Great Vibes', 'Playfair Display', cursive;
+}
+
+.font-serif {
+  font-family: 'Playfair Display', serif;
+}
+
+.font-roman {
+  font-family: 'Cinzel', 'Times New Roman', serif;
+}
+
+/* --- TAB SIDEBAR ACTIVE STATES --- */
+.tab-btn.active {
+  background-color: rgba(10, 47, 29, 0.5);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.tab-btn:hover:not(.active) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* --- CATALOG CARD STYLING --- */
+.garment-card {
+  transition: transform 300ms ease, border-color 300ms ease;
+}
+
+.garment-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(232, 197, 200, 0.6);
+}
+
+.garment-card.selected {
+  border-color: #10b981;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+}
+
+/* --- STAR RATING --- */
+.star.filled {
+  color: #f59e0b;
+}
+
+/* --- CUSTOM SCROLLBAR --- */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.3);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.6);
+}
+
+/* LEAFLET MAP CUSTOM OVERRIDES */
+.leaflet-container {
+  background-color: #0d1117 !important;
+}
