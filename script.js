@@ -1,356 +1,343 @@
 /**
- * AURA 3D Couture Studio Application Logic
- * Implements full tab navigation, 100-fabric dataset generator, camera switcher,
- * live interactive review star-rating, express checkout, and robust error handling.
+ * ATELIER HAUTE — CORE APPLICATION LOGIC
+ * Includes Data Generation, Virtual Camera Controls, Map Integration, Checkout, & Reviews with Error Handling
  */
 
-// Global Application State
-const state = {
-  activeTab: 'tab-1',
-  selectedFabric: null,
-  cameraMode: 'eye-level',
-  selectedRating: 5,
-  authMethod: 'google',
-  discountApplied: false,
-  basePrice: 1250,
-  fabrics: []
+// ================= GLOBAL STATE =================
+const STATE = {
+  currentTab: 'catalog',
+  selectedRating: 0,
+  appliedCoupon: false,
+  basePrice: 2450.00,
+  cartTotal: 2450.00,
+  snapshots: [],
+  reviews: [
+    {
+      author: "Duchess de Rose",
+      rating: 5,
+      text: "The silk drape and precise 3D rendering matched the physical couture gown flawlessly. Truly revolutionary craftsmanship.",
+      date: "MMXXVI"
+    },
+    {
+      author: "Elena Rostova",
+      rating: 4,
+      text: "Exquisite velvet texture rendition in the macro viewer. Delivery was tracked accurately across all stages.",
+      date: "MMXXVI"
+    }
+  ]
 };
 
-// Error Handler Wrapper
-function safeExecute(fn, errorMessage = 'An unexpected error occurred.') {
+// ================= FABRIC CATALOG DATASET GENERATOR (100 ITEMS) =================
+const FABRIC_TYPES = ['Satin', 'Silk', 'Lace', 'Velvet', 'Denim', 'Corduroy', 'Chiffon', 'Brocade', 'Organza', 'Tulle', 'Linen', 'Tweed', 'Leather', 'Technical Synthetic'];
+const FABRIC_IMAGES = [
+  'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=400&q=80',
+  'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=400&q=80',
+  'https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=400&q=80',
+  'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=400&q=80'
+];
+
+let catalogData = [];
+
+function generateCatalogData() {
   try {
-    fn();
+    for (let i = 1; i <= 100; i++) {
+      const type = FABRIC_TYPES[i % FABRIC_TYPES.length];
+      const img = FABRIC_IMAGES[i % FABRIC_IMAGES.length];
+      catalogData.push({
+        id: i,
+        name: `Atelier Model ${i} — ${type}`,
+        type: type,
+        image: img,
+        price: (1200 + (i * 25)).toFixed(2)
+      });
+    }
   } catch (error) {
-    console.error(`[Aura Error]: ${errorMessage}`, error);
-    showToast(`Error: ${errorMessage}`, 'error');
+    showNotification("Failed to generate fabric catalog dataset.", "error");
   }
 }
 
-// System Toast Notification Utility
-function showToast(message, type = 'info') {
-  const container = document.getElementById('toast-container');
-  if (!container) return;
-
-  const toast = document.createElement('div');
-  const bgColor = type === 'error' ? 'bg-red-900/90 border-red-500' : 'bg-stone-900/90 border-amber-500/50';
-  
-  toast.className = `${bgColor} border text-stone-200 font-roman text-xs px-4 py-3 rounded-lg shadow-xl backdrop-blur-md pointer-events-auto transition-all duration-300 transform translate-x-5 opacity-0`;
-  toast.innerText = message;
-
-  container.appendChild(toast);
-
-  setTimeout(() => {
-    toast.classList.remove('translate-x-5', 'opacity-0');
-  }, 10);
-
-  setTimeout(() => {
-    toast.classList.add('opacity-0');
-    setTimeout(() => toast.remove(), 300);
-  }, 3500);
-}
-
-// Initialize Application on DOM Ready
-document.addEventListener('DOMContentLoaded', () => {
-  safeExecute(() => {
-    generateFabricDataset();
-    renderFabricCatalog(state.fabrics);
-    renderInitialReviews();
-    setRating(5);
-  }, 'Failed to initialize Aura Studio application');
-});
-
-// Tab Navigation Logic
-function switchTab(tabId) {
-  safeExecute(() => {
-    const tabs = document.querySelectorAll('.tab-content');
-    const navBtns = document.querySelectorAll('.nav-tab');
-
-    tabs.forEach(tab => tab.classList.add('hidden'));
-    navBtns.forEach(btn => btn.classList.remove('active'));
-
-    const targetTab = document.getElementById(tabId);
-    if (!targetTab) throw new Error(`Tab content #${tabId} not found`);
-
-    targetTab.classList.remove('hidden');
-    state.activeTab = tabId;
-
-    // Highlight button
-    const btnMap = { 'tab-1': 1, 'tab-2': 2, 'tab-3': 3, 'tab-4': 4 };
-    const activeBtn = document.getElementById(`tab-btn-${btnMap[tabId]}`);
-    if (activeBtn) activeBtn.classList.add('active');
-  }, 'Failed switching navigation tabs');
-}
-
-// Generate 100 Couture Fabrics Dataset
-function generateFabricDataset() {
-  const categories = [
-    'Satin', 'Silk', 'Lace', 'Denim', 'Velvet', 'Corduroy', 
-    'Chiffon', 'Brocade', 'Organza', 'Tulle', 'Linen', 'Tweed', 
-    'Leather', 'Synthetic Knit'
-  ];
-
-  const sampleImages = [
-    'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=400&q=80',
-    'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=400&q=80',
-    'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=400&q=80',
-    'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=400&q=80'
-  ];
-
-  state.fabrics = Array.from({ length: 100 }, (_, index) => {
-    const category = categories[index % categories.length];
-    return {
-      id: index + 1,
-      name: `${category} Couture #${index + 1}`,
-      category: category,
-      image: sampleImages[index % sampleImages.length]
-    };
-  });
-}
-
-// Render 100 Fabric Cards into Tab 1
-function renderFabricCatalog(fabricList) {
+// Render Catalog Grid
+function renderCatalog(items) {
   const grid = document.getElementById('fabric-grid');
   if (!grid) return;
 
   grid.innerHTML = '';
+  if (items.length === 0) {
+    grid.innerHTML = `<p class="col-span-full font-roman text-stone-400 text-center py-8">No matching fabrics found.</p>`;
+    return;
+  }
 
-  fabricList.forEach(fabric => {
+  items.forEach(item => {
     const card = document.createElement('div');
-    card.className = 'bg-stone-900/60 border border-stone-800 rounded-xl p-3 hover:border-amber-500/50 cursor-pointer transition flex flex-col items-center group';
-    card.onclick = () => selectFabric(fabric);
-
+    card.className = "bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden hover:border-emerald-500/50 transition-all group";
     card.innerHTML = `
-      <div class="w-full h-28 rounded-lg bg-cover bg-center mb-2 transition transform group-hover:scale-105" style="background-image: url('${fabric.image}');"></div>
-      <p class="font-roman text-[11px] text-stone-200 font-semibold text-center truncate w-full">${fabric.name}</p>
-      <span class="text-[9px] font-roman text-amber-200/60 uppercase">${fabric.category}</span>
+      <div class="h-48 overflow-hidden bg-slate-950 relative">
+        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-110 transition-all duration-500" />
+        <span class="absolute top-2 right-2 font-roman text-[10px] bg-slate-950/80 border border-slate-700 px-2 py-0.5 rounded text-emerald-300">${item.type}</span>
+      </div>
+      <div class="p-3 font-roman space-y-1">
+        <h4 class="text-xs text-stone-200 truncate">${item.name}</h4>
+        <p class="text-xs text-emerald-400 font-bold">$${item.price}</p>
+      </div>
     `;
-
     grid.appendChild(card);
   });
 
-  const countElem = document.getElementById('fabric-count');
-  if (countElem) countElem.innerText = fabricList.length;
+  document.getElementById('fabric-count').innerText = items.length;
 }
 
-// Filter Fabric Catalog Input Search
-function filterFabrics() {
-  safeExecute(() => {
-    const query = document.getElementById('fabric-search').value.toLowerCase().trim();
-    const filtered = state.fabrics.filter(f => 
-      f.name.toLowerCase().includes(query) || f.category.toLowerCase().includes(query)
-    );
-    renderFabricCatalog(filtered);
-  }, 'Error filtering fabric library');
+// Filter Catalog Engine
+function filterCatalog() {
+  try {
+    const query = document.getElementById('catalog-search').value.toLowerCase();
+    const category = document.getElementById('catalog-filter').value;
+
+    const filtered = catalogData.filter(item => {
+      const matchesSearch = item.name.toLowerCase().includes(query) || item.type.toLowerCase().includes(query);
+      const matchesCategory = category === 'ALL' || item.type === category;
+      return matchesSearch && matchesCategory;
+    });
+
+    renderCatalog(filtered);
+  } catch (err) {
+    showNotification("Error filtering catalog items.", "error");
+  }
 }
 
-// Select Fabric and Project on Virtual Viewport
-function selectFabric(fabric) {
-  safeExecute(() => {
-    state.selectedFabric = fabric;
+// ================= NAVIGATION SYSTEM =================
+function switchTab(tabId) {
+  try {
+    const contents = document.querySelectorAll('.tab-content');
+    const navBtns = document.querySelectorAll('.nav-btn');
 
-    const badge = document.getElementById('selected-fabric-badge');
-    if (badge) badge.innerText = `Selected: ${fabric.name}`;
+    contents.forEach(el => el.classList.add('hidden'));
+    navBtns.forEach(btn => btn.classList.remove('active-tab'));
 
-    const modelDisplay = document.getElementById('model-display');
-    if (modelDisplay) {
-      modelDisplay.style.backgroundImage = `url('${fabric.image}')`;
+    const targetSection = document.getElementById(`section-${tabId}`);
+    const targetTab = document.getElementById(`tab-${tabId}`);
+
+    if (targetSection && targetTab) {
+      targetSection.classList.remove('hidden');
+      targetTab.classList.add('active-tab');
+      STATE.currentTab = tabId;
+
+      // Leaflet Map Needs Resize Invalidation when tab is switched
+      if (tabId === 'tracker' && window.atelierMap) {
+        setTimeout(() => window.atelierMap.invalidateSize(), 200);
+      }
     }
-
-    showToast(`Applied ${fabric.name} to 3D Viewport model!`);
-  }, 'Error selecting fabric pattern');
+  } catch (err) {
+    showNotification("Error switching view tabs.", "error");
+  }
 }
 
-// Camera Modes Switcher
+// ================= VIRTUAL AI CAMERA CONTROLS =================
 function setCameraMode(mode) {
-  safeExecute(() => {
-    state.cameraMode = mode;
-    const viewport = document.getElementById('viewport-stage');
-    const status = document.getElementById('camera-status');
+  const img = document.getElementById('viewport-image');
+  const tag = document.getElementById('camera-overlay-tag');
+  if (!img || !tag) return;
 
-    if (!viewport) return;
+  img.className = "h-full object-contain transition-all duration-700 transform";
 
-    // Reset styles
-    viewport.className = 'my-8 flex flex-col items-center justify-center transition-all duration-700';
-
-    if (mode === 'turntable') {
-      viewport.classList.add('animate-spin');
-      if (status) status.innerText = 'Mode: 360° Automatic Turntable';
-    } else if (mode === 'high-angle') {
-      viewport.classList.add('scale-90', '-rotate-3');
-      if (status) status.innerText = 'Mode: High-Angle Structural View';
-    } else if (mode === 'eye-level') {
-      if (status) status.innerText = 'Mode: Studio Front Profile (Eye-Level)';
-    } else if (mode === 'macro') {
-      viewport.classList.add('scale-125');
-      if (status) status.innerText = 'Mode: Extreme Macro Texture Close-up';
-    }
-
-    showToast(`Camera switched to ${mode.toUpperCase()} view.`);
-  }, 'Error changing virtual camera angle');
+  switch (mode) {
+    case 'turntable':
+      img.classList.add('animate-pulse', 'scale-100');
+      tag.innerText = "MODE: I. 360° AUTOMATIC TURNTABLE";
+      break;
+    case 'highangle':
+      img.classList.add('rotate-6', 'scale-90');
+      tag.innerText = "MODE: II. HIGH-ANGLE STRUCTURAL VIEW";
+      break;
+    case 'eyelevel':
+      img.classList.add('scale-100');
+      tag.innerText = "MODE: III. EYE-LEVEL STUDIO FRONT";
+      break;
+    case 'macro':
+      img.classList.add('scale-150');
+      tag.innerText = "MODE: IV. EXTREME MACRO TEXTURE CLOSE-UP";
+      break;
+  }
 }
 
-// AI Camera Snapshot
-function captureSnapshot() {
-  safeExecute(() => {
-    showToast('📸 Snapshot saved to studio library!');
-  }, 'Failed taking snapshot');
-}
+function takeSnapshot() {
+  try {
+    const gallery = document.getElementById('snapshot-gallery');
+    const imgUrl = document.getElementById('viewport-image').src;
 
-// Body Measurement Guide Modal Controls
-function openMeasurementGuide() {
-  const modal = document.getElementById('modal-tutorial');
-  if (modal) modal.classList.remove('hidden');
-}
+    if (STATE.snapshots.length === 0) gallery.innerHTML = '';
 
-function closeMeasurementGuide() {
-  const modal = document.getElementById('modal-tutorial');
-  if (modal) modal.classList.add('hidden');
-}
-
-// Authorization Switcher in Checkout
-function selectAuth(method) {
-  safeExecute(() => {
-    state.authMethod = method;
-    const buttons = document.querySelectorAll('.auth-opt');
-    buttons.forEach(btn => {
-      btn.classList.remove('border-amber-500/50', 'bg-amber-900/30', 'text-amber-200');
-      btn.classList.add('border-stone-700', 'bg-stone-800', 'text-stone-300');
-    });
-
-    const activeBtn = document.getElementById(`auth-${method}`);
-    if (activeBtn) {
-      activeBtn.classList.remove('border-stone-700', 'bg-stone-800', 'text-stone-300');
-      activeBtn.classList.add('border-amber-500/50', 'bg-amber-900/30', 'text-amber-200');
-    }
-
-    showToast(`Account Mode set to ${method.toUpperCase()}`);
-  }, 'Failed switching authorization method');
-}
-
-// Apply Coupon Code
-function applyCoupon() {
-  safeExecute(() => {
-    const codeInput = document.getElementById('coupon-code');
-    const msg = document.getElementById('coupon-message');
-    const totalDisplay = document.getElementById('total-price');
-
-    if (!codeInput || !msg) return;
-
-    const code = codeInput.value.trim().toUpperCase();
-
-    if (code === 'AURA20') {
-      if (state.discountApplied) {
-        msg.innerText = 'I. Coupon code already applied.';
-        msg.className = 'font-roman text-[11px] mt-1 text-amber-400';
-        return;
-      }
-      state.discountApplied = true;
-      const discounted = state.basePrice * 0.8;
-      totalDisplay.innerText = `$${discounted.toFixed(2)} USD`;
-      msg.innerText = 'I. Success: 20% Atelier discount applied!';
-      msg.className = 'font-roman text-[11px] mt-1 text-emerald-400';
-      showToast('20% Discount code applied!');
-    } else {
-      msg.innerText = 'I. Invalid promotional coupon code.';
-      msg.className = 'font-roman text-[11px] mt-1 text-red-400';
-    }
-  }, 'Error applying coupon code');
-}
-
-// Checkout Form Submission
-function handleCheckout(event) {
-  event.preventDefault();
-  safeExecute(() => {
-    const name = document.getElementById('cust-name').value;
-    const contact = document.getElementById('cust-contact').value;
-    const payment = document.querySelector('input[name="payment"]:checked')?.value || 'Credit Card';
-
-    if (!name || !contact) {
-      showToast('Please fill out all contact fields.', 'error');
-      return;
-    }
-
-    showToast(`Order Confirmed! Thank you, ${name}. Paid via ${payment}.`);
+    STATE.snapshots.push(imgUrl);
     
-    // Reset Form
-    document.getElementById('checkout-form').reset();
-    state.discountApplied = false;
-    document.getElementById('total-price').innerText = `$${state.basePrice.toFixed(2)} USD`;
-    document.getElementById('coupon-message').innerText = '';
-  }, 'Checkout processing error');
+    const snapThumb = document.createElement('img');
+    snapThumb.src = imgUrl;
+    snapThumb.className = "w-full h-16 object-cover rounded border border-emerald-500/50 shadow-md";
+    
+    gallery.appendChild(snapThumb);
+    showNotification("Snapshot render successfully saved to gallery.", "success");
+  } catch (err) {
+    showNotification("Unable to process camera snapshot.", "error");
+  }
 }
 
-// Star Rating Interactive Selection
-function setRating(rating) {
-  safeExecute(() => {
-    state.selectedRating = rating;
-    const stars = document.querySelectorAll('#star-rating .star');
-    stars.forEach((star, index) => {
-      if (index < rating) {
-        star.classList.add('text-amber-400');
-        star.classList.remove('text-stone-600');
-      } else {
-        star.classList.remove('text-amber-400');
-        star.classList.add('text-stone-600');
-      }
-    });
-  }, 'Error setting star rating');
+function toggleMeasurementModal(show) {
+  const modal = document.getElementById('modal-measurement');
+  if (modal) {
+    modal.classList.toggle('hidden', !show);
+  }
 }
 
-// Render Initial Mock Reviews
-function renderInitialReviews() {
-  const reviews = [
-    { name: 'Duchess Genevieve', rating: 5, text: 'The 3D silk draping texture visualizer is unmatched in clarity. Exquisite experience.' },
-    { name: 'Baroness Alexandra', rating: 5, text: 'Seamless checkout and real-time package logistics tracking updates. Exceptional luxury service.' }
-  ];
+// ================= LIVE PACKAGE MAP TRACKER =================
+function initMap() {
+  try {
+    if (!document.getElementById('map')) return;
 
-  const container = document.getElementById('reviews-container');
-  if (!container) return;
+    // Center coordinates (e.g. Paris to New York route)
+    const map = L.map('map').setView([48.8566, 2.3522], 4);
+    
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap &copy; CARTO',
+      maxZoom: 19
+    }).addTo(map);
 
-  reviews.forEach(r => appendReview(r.name, r.rating, r.text));
+    // Marker Locations
+    const atelierMarker = L.marker([48.8566, 2.3522]).addTo(map).bindPopup('I. Atelier Paris Workshop');
+    const transitMarker = L.marker([50.8503, 4.3517]).addTo(map).bindPopup('III. Transit Hub in Progress');
+
+    window.atelierMap = map;
+  } catch (err) {
+    console.warn("Leaflet Map failed to initialize.", err);
+  }
 }
 
-// Append Single Review
-function appendReview(name, rating, text) {
-  const container = document.getElementById('reviews-container');
-  if (!container) return;
-
-  const card = document.createElement('div');
-  card.className = 'bg-stone-950/80 border border-stone-800 rounded-xl p-4 space-y-2';
-
-  const starsHtml = '★'.repeat(rating) + '☆'.repeat(5 - rating);
-
-  card.innerHTML = `
-    <div class="flex justify-between items-center">
-      <span class="font-roman text-xs font-bold text-amber-200">I. ${name}</span>
-      <span class="text-amber-400 text-sm tracking-wider">${starsHtml}</span>
-    </div>
-    <p class="font-roman text-xs text-stone-300 italic">"${text}"</p>
-  `;
-
-  container.prepend(card);
+// ================= CHECKOUT & PROMO ENGINE =================
+function setAuthMethod(method) {
+  const buttons = document.querySelectorAll('.auth-btn');
+  buttons.forEach(btn => btn.classList.remove('active-auth', 'bg-emerald-950/80', 'border-emerald-500'));
+  
+  event.target.classList.add('active-auth', 'bg-emerald-950/80', 'border-emerald-500');
+  showNotification(`Account method set to: ${method.toUpperCase()}`, "info");
 }
 
-// Review Submission
-function submitReview(event) {
-  event.preventDefault();
-  safeExecute(() => {
-    const nameInput = document.getElementById('reviewer-name');
-    const textInput = document.getElementById('reviewer-text');
+function applyCoupon() {
+  const code = document.getElementById('coupon-code').value.trim().toUpperCase();
+  const status = document.getElementById('coupon-status');
+  
+  if (code === 'ATELIER2026') {
+    STATE.appliedCoupon = true;
+    status.innerText = "PROMO CODE APPLIED: 20% DISCOUNT";
+    status.className = "text-[10px] text-emerald-400 mt-1";
+    updateTotals();
+  } else {
+    status.innerText = "INVALID COUPON CODE";
+    status.className = "text-[10px] text-rose-400 mt-1";
+  }
+}
 
-    const name = nameInput.value.trim();
-    const text = textInput.value.trim();
+function updateTotals() {
+  let discount = STATE.appliedCoupon ? STATE.basePrice * 0.20 : 0;
+  STATE.cartTotal = STATE.basePrice - discount;
 
-    if (!name || !text) {
-      showToast('Please complete all review fields.', 'error');
-      return;
+  document.getElementById('discount-val').innerText = `-$${discount.toFixed(2)}`;
+  document.getElementById('total-val').innerText = `$${STATE.cartTotal.toFixed(2)}`;
+}
+
+function handleCheckoutSubmit(e) {
+  e.preventDefault();
+  try {
+    const name = document.getElementById('cust-firstname').value;
+    if (!name) throw new Error("Please complete required contact details.");
+
+    showNotification(`Order placed successfully! Thank you, ${name}.`, "success");
+  } catch (err) {
+    showNotification(err.message || "Error processing checkout transaction.", "error");
+  }
+}
+
+// ================= CLIENT REVIEW SYSTEM =================
+function setRating(score) {
+  STATE.selectedRating = score;
+  const stars = document.querySelectorAll('#star-rating .star');
+  stars.forEach((star, idx) => {
+    if (idx < score) {
+      star.classList.add('text-amber-400');
+      star.classList.remove('text-stone-600');
+    } else {
+      star.classList.remove('text-amber-400');
+      star.classList.add('text-stone-600');
+    }
+  });
+}
+
+function renderReviews() {
+  const feed = document.getElementById('reviews-feed');
+  if (!feed) return;
+
+  feed.innerHTML = '';
+  STATE.reviews.forEach(rev => {
+    const starsStr = '★'.repeat(rev.rating) + '☆'.repeat(5 - rev.rating);
+    const card = document.createElement('div');
+    card.className = "bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-2 font-roman text-xs";
+    card.innerHTML = `
+      <div class="flex justify-between items-center">
+        <span class="font-bold text-stone-200">${rev.author}</span>
+        <span class="text-amber-400 tracking-wider text-sm">${starsStr}</span>
+      </div>
+      <p class="text-stone-400 italic">"${rev.text}"</p>
+      <span class="text-[10px] text-stone-600 block text-right">${rev.date}</span>
+    `;
+    feed.appendChild(card);
+  });
+}
+
+function handleReviewSubmit(e) {
+  e.preventDefault();
+  try {
+    const author = document.getElementById('review-author').value.trim();
+    const text = document.getElementById('review-text').value.trim();
+
+    if (STATE.selectedRating === 0) {
+      throw new Error("Please select a star rating before submitting.");
     }
 
-    appendReview(name, state.selectedRating, text);
-    showToast('Your testimonial has been published!');
+    STATE.reviews.unshift({
+      author: author,
+      rating: STATE.selectedRating,
+      text: text,
+      date: "MMXXVI"
+    });
 
-    nameInput.value = '';
-    textInput.value = '';
-    setRating(5);
-  }, 'Failed to submit review');
+    renderReviews();
+    document.getElementById('review-form').reset();
+    setRating(0);
+    showNotification("Critique successfully added to public feed.", "success");
+  } catch (err) {
+    showNotification(err.message || "Failed to post review.", "error");
+  }
 }
+
+// ================= GLOBAL NOTIFICATION SYSTEM =================
+function showNotification(msg, type = 'info') {
+  const bar = document.getElementById('notification-bar');
+  if (!bar) return;
+
+  bar.innerText = msg;
+  bar.classList.remove('hidden', 'bg-emerald-950', 'border-emerald-500', 'text-emerald-200', 'bg-rose-950', 'border-rose-500', 'text-rose-200');
+
+  if (type === 'error') {
+    bar.classList.add('bg-rose-950', 'border-rose-500', 'text-rose-200');
+  } else {
+    bar.classList.add('bg-emerald-950', 'border-emerald-500', 'text-emerald-200');
+  }
+
+  setTimeout(() => {
+    bar.classList.add('hidden');
+  }, 4000);
+}
+
+// ================= INITIALIZATION =================
+document.addEventListener('DOMContentLoaded', () => {
+  generateCatalogData();
+  renderCatalog(catalogData);
+  renderReviews();
+  initMap();
+});
