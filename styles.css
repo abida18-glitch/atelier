@@ -1,0 +1,51 @@
+/* Custom Ombre Dark Gradient & Typography Rule Definitions */
+
+@layer utilities {
+  /* Prominent Elegant Script Font for Titles & Tabs */
+  .font-script {
+    font-family: 'Great Vibes', 'Playfair Display', cursive, serif;
+  }
+
+  /* Classical Roman Serif Font for Instructional Text Steps & Field Labels */
+  .font-roman {
+    font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+  }
+}
+
+/* Deep Ombre Gradient Transition (Midnight/Obsidian to Soft Nude/Brown/Pastel Highlights) */
+.bg-gradient-ombre {
+  background: linear-gradient(
+    135deg, 
+    #050505 0%, 
+    #0d0f12 30%, 
+    #181512 60%, 
+    #211a18 85%, 
+    #382d28 100%
+  );
+  background-attachment: fixed;
+}
+
+/* Active Tab Highlight Styling */
+.nav-tab.active {
+  background-color: rgba(212, 175, 55, 0.12);
+  border-left: 3px solid #d4af37;
+}
+
+.nav-tab:hover:not(.active) {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2521;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3d342e;
+}
