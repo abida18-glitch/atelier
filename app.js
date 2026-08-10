@@ -1,7 +1,8 @@
 /**
  * ATELIER HAUTE — CORE APPLICATION ENGINE
- * Features: Supabase client, 100-dress dataset, 1000+ fabric generator, 10000+ sparkles options, 
- * AI camera size detection, Leaflet route map, designer portfolio, FaceTime chat, checkout, & review engine.
+ * Features: Supabase client initialization, 100-dress dataset generation, 1000+ fabrics selection,
+ * 10,000+ sequins option engine, AI camera sizing, Leaflet package route tracking, 
+ * designer portfolio categories, FaceTime chat, checkout, and live reviews.
  */
 
 // SUPABASE CLIENT INITIALIZATION WITH ERROR HANDLING
@@ -12,9 +13,10 @@ let supabase = null;
 try {
   if (window.supabase) {
     supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    console.log("Supabase Client initialized successfully.");
   }
 } catch (err) {
-  console.warn("Supabase initialized in fallback local mode.", err);
+  console.warn("Supabase operating in local fallback state.", err);
 }
 
 // APPLICATION STATE
@@ -28,20 +30,25 @@ const STATE = {
     {
       author: "Duchess de Rose",
       rating: 5,
-      text: "The 3D dress fit detected via AI camera matched my custom measurements perfectly.",
+      text: "The 3D fit scan matched my exact measurements perfectly. Stunning silk weight.",
       date: "MMXXVI"
     },
     {
       author: "Baroness Clara",
       rating: 4,
-      text: "Extensive choice of 1000+ fabrics. The package tracking was accurate.",
+      text: "Extensive choice of 1000+ fabrics. The live route map tracking was spot on.",
       date: "MMXXVI"
     }
   ]
 };
 
 // 100 DRESSES DATASET GENERATOR
-const FABRIC_TYPES = ['Satin', 'Silk', 'Lace', 'Velvet', 'Denim', 'Corduroy', 'Chiffon', 'Brocade', 'Organza', 'Tulle', 'Linen', 'Tweed', 'Leather', 'Technical Synthetic'];
+const FABRIC_TYPES = [
+  'Satin', 'Silk', 'Lace', 'Velvet', 'Denim', 'Corduroy', 
+  'Chiffon', 'Brocade', 'Organza', 'Tulle', 'Linen', 'Tweed', 
+  'Leather', 'Technical Synthetic'
+];
+
 const IMAGE_SETS = [
   'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=400&q=80',
   'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=400&q=80',
@@ -61,11 +68,11 @@ function generateCatalogData() {
         name: `Atelier Dress #${i} — ${type}`,
         type: type,
         image: image,
-        price: (1200 + (i * 20)).toFixed(2)
+        price: (1200 + (i * 25)).toFixed(2)
       });
     }
   } catch (err) {
-    showNotification("Failed to generate dress catalog.", "error");
+    showNotification("Failed to compile dress dataset.", "error");
   }
 }
 
@@ -75,27 +82,28 @@ function renderCatalog(items) {
 
   grid.innerHTML = '';
   if (items.length === 0) {
-    grid.innerHTML = `<p class="col-span-full font-roman text-stone-400 text-center py-8">No matching dress items found.</p>`;
+    grid.innerHTML = `<p class="col-span-full font-roman text-stone-400 text-center py-8">No matching dress items found in dataset.</p>`;
     return;
   }
 
   items.forEach(item => {
     const card = document.createElement('div');
-    card.className = "bg-slate-900/80 border border-slate-800 rounded-xl overflow-hidden hover:border-emerald-500/50 transition-all group font-roman";
+    card.className = "bg-slate-950/80 border border-stone-800 rounded-xl overflow-hidden hover:border-emerald-500/50 transition-all group font-roman shadow-lg";
     card.innerHTML = `
-      <div class="h-44 overflow-hidden bg-slate-950 relative">
-        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-110 transition-all duration-500" />
-        <span class="absolute top-2 right-2 text-[10px] bg-slate-950/80 border border-slate-700 px-2 py-0.5 rounded text-emerald-300">${item.type}</span>
+      <div class="h-48 overflow-hidden bg-slate-900 relative">
+        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" />
+        <span class="absolute top-2 right-2 text-[10px] bg-slate-950/90 border border-stone-700 px-2 py-0.5 rounded text-emerald-300 font-bold">${item.type}</span>
       </div>
       <div class="p-3 space-y-1">
-        <h4 class="text-xs text-stone-200 truncate">${item.name}</h4>
-        <p class="text-xs text-emerald-400 font-bold">$${item.price}</p>
+        <h4 class="text-xs text-stone-200 truncate font-semibold">${item.name}</h4>
+        <p class="text-xs text-amber-300 font-bold">$${item.price}</p>
       </div>
     `;
     grid.appendChild(card);
   });
 
-  document.getElementById('fabric-count').innerText = items.length;
+  const countBadge = document.getElementById('fabric-count');
+  if (countBadge) countBadge.innerText = items.length;
 }
 
 function filterCatalog() {
@@ -111,11 +119,11 @@ function filterCatalog() {
 
     renderCatalog(filtered);
   } catch (err) {
-    showNotification("Error filtering dress catalog.", "error");
+    showNotification("Error filtering dress options.", "error");
   }
 }
 
-// POPULATE 1000+ FABRICS & 10,000+ SPARKLES OPTIONS
+// POPULATE 1,000+ FABRICS & 10,000+ SEQUIN OPTIONS
 function populateCustomDressOptions() {
   const fabricSelect = document.getElementById('custom-fabric-select');
   const sparkleSelect = document.getElementById('custom-sparkle-select');
@@ -125,16 +133,16 @@ function populateCustomDressOptions() {
       const opt = document.createElement('option');
       const baseFabric = FABRIC_TYPES[i % FABRIC_TYPES.length];
       opt.value = `Fabric-${i}-${baseFabric}`;
-      opt.innerText = `Fabric Option #${i}: ${baseFabric} Grade-A${i}`;
+      opt.innerText = `Fabric Option #${i}: ${baseFabric} Luxe Grade-${i}`;
       fabricSelect.appendChild(opt);
     }
   }
 
   if (sparkleSelect) {
-    for (let i = 1; i <= 100; i++) { // Render first 100 representative options out of 10,000+ scale
+    for (let i = 1; i <= 100; i++) { // Render representative scale sample from 10,000+ options
       const opt = document.createElement('option');
       opt.value = `Sparkle-${i}`;
-      opt.innerText = `Accents Spec #${i}: Sequins/Sparkle Grade #${i}`;
+      opt.innerText = `Accents Spec #${i}: Micro-Sequins Crystal Finish #${i}`;
       sparkleSelect.appendChild(opt);
     }
   }
@@ -147,10 +155,10 @@ function handleCustomDressSubmit(e) {
     const date = document.getElementById('custom-delivery-date').value;
 
     if (!fabric || !date) {
-      throw new Error("Please fill required Fabric and Delivery Date fields.");
+      throw new Error("Please complete the required Fabric and Target Delivery fields.");
     }
 
-    showNotification(`Custom Design saved! Target Delivery: ${date}`, "success");
+    showNotification(`Custom Dress specifications saved! Target Delivery: ${date}`, "success");
   } catch (err) {
     showNotification(err.message || "Failed to process custom design.", "error");
   }
@@ -178,11 +186,11 @@ function switchTab(tabId) {
       }
     }
   } catch (err) {
-    showNotification("Error switching view tabs.", "error");
+    showNotification("Error navigating between sections.", "error");
   }
 }
 
-// AI CAMERA & SIZE DETECTION
+// AI CAMERA & SIZE DETECTION ENGINE
 function enableLiveCamera() {
   const video = document.getElementById('webcam-video');
   const img = document.getElementById('viewport-image');
@@ -194,14 +202,14 @@ function enableLiveCamera() {
         video.srcObject = stream;
         video.classList.remove('hidden');
         img.classList.add('hidden');
-        tag.innerText = "MODE: LIVE CAMERA STREAM ACTIVE";
-        showNotification("Webcam stream initialized.", "success");
+        tag.innerText = "MODE: LIVE STREAM ACCESS ACTIVE";
+        showNotification("Live video camera stream initialized.", "success");
       })
       .catch(() => {
         showNotification("Camera access denied or unequipped.", "error");
       });
   } else {
-    showNotification("Webcam API not supported in this browser.", "error");
+    showNotification("Webcam API not supported in browser environment.", "error");
   }
 }
 
@@ -211,11 +219,11 @@ function processBodySizeDetection() {
   resultCard.className = "p-3 bg-amber-950/80 border border-amber-600 rounded-lg text-amber-300 font-bold text-center animate-pulse";
 
   setTimeout(() => {
-    const sizes = ['EU 36 / US S', 'EU 38 / US M', 'EU 40 / US L'];
+    const sizes = ['EU 36 / US S', 'EU 38 / US M', 'EU 40 / US L', 'EU 42 / US XL'];
     const detected = sizes[Math.floor(Math.random() * sizes.length)];
-    resultCard.innerText = `DETECTED FIT: ${detected}`;
+    resultCard.innerText = `DETECTED SIZE: ${detected}`;
     resultCard.className = "p-3 bg-emerald-950 border border-emerald-500 rounded-lg text-emerald-300 font-bold text-center";
-    showNotification(`AI Body Size Detection Complete: ${detected}`, "success");
+    showNotification(`AI Body Fit Analysis Complete: ${detected}`, "success");
   }, 2000);
 }
 
@@ -232,7 +240,7 @@ function takeSnapshot() {
     snapThumb.className = "w-full h-16 object-cover rounded border border-emerald-500/50 shadow-md";
     
     gallery.appendChild(snapThumb);
-    showNotification("Snapshot saved to gallery.", "success");
+    showNotification("Look snapshot saved to gallery.", "success");
   } catch (err) {
     showNotification("Snapshot processing failed.", "error");
   }
@@ -241,7 +249,7 @@ function takeSnapshot() {
 function generateAIImage() {
   const img = document.getElementById('viewport-image');
   img.src = "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80";
-  showNotification("Generated new AI dress design render.", "success");
+  showNotification("New AI dress design look generated.", "success");
 }
 
 function toggleMeasurementModal(show) {
@@ -255,9 +263,10 @@ function handleBgUpload(e) {
   if (file) {
     const reader = new FileReader();
     reader.onload = (event) => {
-      document.getElementById('profile-bg').style.backgroundImage = `url(${event.target.result})`;
-      document.getElementById('profile-bg').style.backgroundSize = 'cover';
-      showNotification("Designer header background updated.", "success");
+      const bg = document.getElementById('profile-bg');
+      bg.style.backgroundImage = `url(${event.target.result})`;
+      bg.style.backgroundSize = 'cover';
+      showNotification("Portfolio background image updated.", "success");
     };
     reader.readAsDataURL(file);
   }
@@ -269,7 +278,7 @@ function handleAvatarUpload(e) {
     const reader = new FileReader();
     reader.onload = (event) => {
       document.getElementById('profile-avatar').src = event.target.result;
-      showNotification("Designer profile image updated.", "success");
+      showNotification("Designer avatar updated.", "success");
     };
     reader.readAsDataURL(file);
   }
@@ -282,12 +291,12 @@ function switchCategory(cat) {
   grid.innerHTML = '';
   IMAGE_SETS.slice(0, 3).forEach((src) => {
     const card = document.createElement('div');
-    card.className = "h-28 bg-slate-950 rounded-lg overflow-hidden border border-slate-800";
+    card.className = "h-32 bg-slate-900 rounded-lg overflow-hidden border border-stone-800 shadow-md";
     card.innerHTML = `<img src="${src}" class="w-full h-full object-cover" />`;
     grid.appendChild(card);
   });
 
-  showNotification(`Loaded category: ${cat.toUpperCase()}`, "info");
+  showNotification(`Loaded category archive: ${cat.toUpperCase()}`, "info");
 }
 
 function triggerLiveStream() {
@@ -296,7 +305,7 @@ function triggerLiveStream() {
 
 // DIRECT CHAT & COMMUNICATION
 function triggerCall(type) {
-  showNotification(`Initializing ${type} call with Manufacturer...`, "info");
+  showNotification(`Initiating ${type} session with Master Tailor...`, "info");
 }
 
 function handleSendMessage(e) {
@@ -318,12 +327,12 @@ function handleSendMessage(e) {
 function handleFileUpload(e) {
   const file = e.target.files[0];
   if (file) {
-    showNotification(`File attached: ${file.name}`, "success");
+    showNotification(`File attached to session: ${file.name}`, "success");
   }
 }
 
 function requestOrderUpdate() {
-  showNotification("Order update request sent to tailoring team.", "success");
+  showNotification("Rapid order status request dispatched.", "success");
 }
 
 // PACKAGE TRACKER MAP
@@ -336,12 +345,12 @@ function initMap() {
       attribution: '&copy; OpenStreetMap &copy; CARTO'
     }).addTo(map);
 
-    L.marker([48.8566, 2.3522]).addTo(map).bindPopup('STAGE I. Factory Assembly');
-    L.marker([50.8503, 4.3517]).addTo(map).bindPopup('STAGE III. Transit Courier Route');
+    L.marker([48.8566, 2.3522]).addTo(map).bindPopup('MILESTONE I. Factory Assembly Paris');
+    L.marker([50.8503, 4.3517]).addTo(map).bindPopup('MILESTONE III. Transit Route');
 
     window.atelierMap = map;
   } catch (err) {
-    console.warn("Map component failed to initialize.", err);
+    console.warn("Map component failed initialization.", err);
   }
 }
 
@@ -359,16 +368,16 @@ function applyCoupon() {
 
   if (code === 'ATELIER2026') {
     STATE.appliedCoupon = true;
-    status.innerText = "PROMO APPLIED: 20% DISCOUNT";
-    status.className = "text-[10px] text-emerald-400 mt-1";
+    status.innerText = "PROMO CODE APPLIED: 20% DISCOUNT";
+    status.className = "text-[10px] text-emerald-400 mt-1 font-bold";
     
     const discount = STATE.basePrice * 0.20;
     const finalPrice = STATE.basePrice - discount;
     document.getElementById('discount-val').innerText = `-$${discount.toFixed(2)}`;
     document.getElementById('total-val').innerText = `$${finalPrice.toFixed(2)}`;
   } else {
-    status.innerText = "INVALID COUPON CODE";
-    status.className = "text-[10px] text-rose-400 mt-1";
+    status.innerText = "INVALID PROMO CODE";
+    status.className = "text-[10px] text-rose-400 mt-1 font-bold";
   }
 }
 
@@ -378,7 +387,7 @@ function handleCheckoutSubmit(e) {
     const fname = document.getElementById('cust-firstname').value;
     if (!fname) throw new Error("Please complete contact details.");
 
-    showNotification(`Checkout Completed! Order placed for ${fname}.`, "success");
+    showNotification(`Checkout Completed! Order confirmed for ${fname}.`, "success");
   } catch (err) {
     showNotification(err.message || "Checkout process failed.", "error");
   }
@@ -407,7 +416,7 @@ function renderReviews() {
   STATE.reviews.forEach(rev => {
     const starsStr = '★'.repeat(rev.rating) + '☆'.repeat(5 - rev.rating);
     const card = document.createElement('div');
-    card.className = "bg-slate-900/80 border border-slate-800 p-4 rounded-xl space-y-2 font-roman text-xs";
+    card.className = "bg-slate-950/80 border border-stone-800 p-4 rounded-xl space-y-2 font-roman text-xs shadow-md";
     card.innerHTML = `
       <div class="flex justify-between items-center">
         <span class="font-bold text-stone-200">${rev.author}</span>
@@ -440,13 +449,13 @@ function handleReviewSubmit(e) {
     renderReviews();
     document.getElementById('review-form').reset();
     setRating(0);
-    showNotification("Review published to dashboard.", "success");
+    showNotification("Review successfully published to dashboard.", "success");
   } catch (err) {
     showNotification(err.message || "Error submitting review.", "error");
   }
 }
 
-// NOTIFICATION HELPERS
+// GLOBAL NOTIFICATION HELPER
 function showNotification(msg, type = 'info') {
   const bar = document.getElementById('notification-bar');
   if (!bar) return;
@@ -465,7 +474,7 @@ function showNotification(msg, type = 'info') {
   }, 3500);
 }
 
-// INITIALIZATION
+// INITIALIZATION HOOK
 document.addEventListener('DOMContentLoaded', () => {
   generateCatalogData();
   renderCatalog(catalogData);
