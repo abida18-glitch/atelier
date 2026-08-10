@@ -1,0 +1,58 @@
+/* Custom Fonts */
+.font-script {
+  font-family: 'Great Vibes', cursive;
+}
+
+.font-roman {
+  font-family: 'Cinzel', Georgia, serif;
+}
+
+/* Dark Gradient Ombre Color Theme (Black, Dark Green, Nude, Charcoal) */
+.bg-dark-ombre {
+  background: linear-gradient(
+    135deg,
+    #020408 0%,
+    #081410 30%,
+    #17120e 65%,
+    #211d24 100%
+  );
+  background-attachment: fixed;
+}
+
+/* Sidebar Navigation Button Styles */
+.nav-btn {
+  background-color: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(51, 65, 85, 0.3);
+  color: #cbd5e1;
+}
+
+.nav-btn:hover {
+  background-color: rgba(6, 78, 59, 0.3);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #f0fdf4;
+}
+
+.active-tab {
+  background: linear-gradient(90deg, rgba(6, 78, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+}
+
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #020617;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #059669;
+}
